@@ -3,3 +3,4 @@ obj
 *.db 
 **/**/Migrations
 **/**/.vscode 
+**/**/.vs

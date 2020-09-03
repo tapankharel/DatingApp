@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using DatingApp.Api.Data;
 using DatingApp.Api.Helpers;
 using DatingApp.Api.Repository;
@@ -36,12 +37,17 @@ namespace DatingApp.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
             services.AddDbContext<DataContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DatingAppConnection")));
             services.AddCors();
+            services.AddControllers().AddNewtonsoftJson(options =>
+            {
+                options.SerializerSettings.ReferenceLoopHandling = 
+                    Newtonsoft.Json.ReferenceLoopHandling.Ignore; 
+            }); 
             services.AddScoped<IAuthRepository, AuthRepo>();
+            services.AddScoped<IDatingRepository, DatingRepo>();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
@@ -54,6 +60,7 @@ namespace DatingApp.Api
                         ValidateAudience = false
                     };
                 });
+            services.AddAutoMapper(typeof(DatingRepo).Assembly);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
